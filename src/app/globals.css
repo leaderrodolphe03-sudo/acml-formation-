@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/* Polices chargées par next/font (voir src/app/layout.tsx) */
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-script: "Dancing Script", var(--font-dancing), cursive;
+}
+
+@theme {
+  --color-brand-50: #eef5fc;
+  --color-brand-100: #d9e8f7;
+  --color-brand-200: #b3d0ee;
+  --color-brand-500: #1d63ad;
+  --color-brand-600: #145595;
+  --color-brand-700: #0f4a85;
+  --color-brand-800: #0c3b6b;
+  --color-brand-900: #0a2c50;
+  --color-brand-950: #061c35;
+
+  --color-accent-50: #fff1f1;
+  --color-accent-100: #ffdfe0;
+  --color-accent-500: #f0262d;
+  --color-accent-600: #e3131b;
+  --color-accent-700: #bf0d14;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #f6f8fb;
+  color: #0f1b2d;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Petits composants réutilisables */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none;
+}
+@utility btn-primary {
+  @apply btn bg-brand-700 text-white shadow-sm shadow-brand-900/20 hover:bg-brand-800;
+}
+@utility btn-accent {
+  @apply btn bg-accent-600 text-white shadow-sm shadow-accent-700/25 hover:bg-accent-700;
+}
+@utility btn-ghost {
+  @apply btn border border-slate-200 bg-white text-slate-700 hover:border-brand-200 hover:text-brand-700;
+}
+@utility card {
+  @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,27,45,.04)];
+}
+@utility input {
+  @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset;
+}
+@utility eyebrow {
+  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-accent-600;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fade-up {
+  animation: fade-up .6s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
