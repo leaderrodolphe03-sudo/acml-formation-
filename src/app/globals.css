@@ -1,8 +1,10 @@
 @import "tailwindcss";
+@import "./vitrine.css";
 
-/* Polices chargées par next/font (voir src/app/layout.tsx) */
+/* Polices chargées par next/font (voir src/app/layout.tsx).
+   Inter Tight partout (site + plateformes) pour une identité unique. */
 @theme inline {
-  --font-sans: "Plus Jakarta Sans", var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Tight", var(--font-tight), "Plus Jakarta Sans", var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-script: "Dancing Script", var(--font-dancing), cursive;
 }
 
@@ -22,6 +24,8 @@
   --color-accent-500: #f0262d;
   --color-accent-600: #e3131b;
   --color-accent-700: #bf0d14;
+
+  --color-canvas: #f4f7fb;
 }
 
 html {
@@ -29,38 +33,52 @@ html {
 }
 
 body {
-  background: #f6f8fb;
-  color: #0f1b2d;
+  background: var(--color-canvas);
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
 }
 
-/* Petits composants réutilisables */
+/* Icônes : trait fin et régulier dans toute l'application */
+.app svg.lucide {
+  stroke-width: 1.75;
+}
+
+/* ── Composants de l'application (espaces étudiant / superviseur, connexion) ── */
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none;
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-full px-4.5 text-[13.5px] font-medium whitespace-nowrap transition active:scale-[.98] disabled:pointer-events-none disabled:opacity-45;
 }
 @utility btn-primary {
-  @apply btn bg-brand-700 text-white shadow-sm shadow-brand-900/20 hover:bg-brand-800;
+  @apply btn text-white shadow-[0_8px_20px_-10px_rgba(10,44,80,0.7)] hover:brightness-110;
+  background: linear-gradient(100deg, #2f7fd1 0%, var(--color-brand-700) 45%, var(--color-brand-900) 100%);
 }
 @utility btn-accent {
-  @apply btn bg-accent-600 text-white shadow-sm shadow-accent-700/25 hover:bg-accent-700;
+  @apply btn text-white shadow-[0_8px_20px_-10px_rgba(191,13,20,0.7)] hover:brightness-110;
+  background: linear-gradient(100deg, #ff4b51 0%, var(--color-accent-600) 50%, var(--color-accent-700) 100%);
 }
 @utility btn-ghost {
-  @apply btn border border-slate-200 bg-white text-slate-700 hover:border-brand-200 hover:text-brand-700;
+  @apply btn border border-line bg-white text-ink hover:border-brand-200 hover:bg-surface;
+}
+@utility btn-soft {
+  @apply btn bg-tint text-brand-800 hover:bg-brand-100;
 }
 @utility card {
-  @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,27,45,.04)];
+  @apply rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(15,31,53,0.04),0_10px_30px_-22px_rgba(15,31,53,0.25)];
 }
 @utility input {
-  @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
+  @apply h-11 w-full rounded-xl border border-line bg-white px-3.5 text-[14px] text-ink outline-none transition placeholder:text-ink-soft/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-100;
 }
 @utility label {
-  @apply mb-1.5 block text-sm font-medium text-slate-700;
+  @apply mb-1.5 block text-[12.5px] font-medium text-ink-soft;
 }
 @utility chip {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset;
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-medium whitespace-nowrap ring-1 ring-inset;
 }
 @utility eyebrow {
-  @apply inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-accent-600;
+  @apply inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[.16em] text-accent-600;
+}
+@utility icon-tile {
+  @apply grid shrink-0 place-items-center rounded-xl;
 }
 
 @keyframes fade-up {
@@ -69,6 +87,22 @@ body {
 }
 .animate-fade-up {
   animation: fade-up .6s cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+}
+.animate-menu {
+  transform-origin: top right;
+  animation: menu-in .2s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Panneau dégradé « verre » réutilisé dans les espaces */
+.panel-blue {
+  background:
+    radial-gradient(90% 80% at 90% 0%, rgba(255, 255, 255, 0.16), transparent 60%),
+    radial-gradient(50% 60% at 0% 100%, rgba(227, 19, 27, 0.22), transparent 70%),
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 46px),
+    linear-gradient(160deg, #1b5fa3 0%, var(--color-brand-900) 70%, #061c35 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

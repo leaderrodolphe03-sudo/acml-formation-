@@ -1,6 +1,6 @@
 'use client'
 
-import { BookOpen, CalendarDays, LayoutDashboard, MessageCircle } from 'lucide-react'
+import { CalendarDays, LayoutGrid, MessagesSquare, MonitorPlay } from 'lucide-react'
 import { useMemo, type ReactNode } from 'react'
 import Shell from '../../components/Shell'
 import { levelById } from '../../lib/catalog'
@@ -29,11 +29,12 @@ export default function StudentLayout({ children }: { children: ReactNode }) {
   return (
     <Shell
       roleLabel="Espace étudiant"
+      notifications={{ count: unread, href: '/etudiant/messages', label: 'Messages non lus' }}
       nav={[
-        { to: '/etudiant', label: 'Tableau de bord', short: 'Accueil', icon: LayoutDashboard, end: true },
-        { to: '/etudiant/lecons', label: 'Mes leçons', short: 'Leçons', icon: BookOpen, badge: stats.late || undefined },
-        { to: '/etudiant/calendrier', label: 'Calendrier', icon: CalendarDays },
-        { to: '/etudiant/messages', label: 'Messages', icon: MessageCircle, badge: unread || undefined },
+        { to: '/etudiant', label: 'Tableau de bord', short: 'Accueil', icon: LayoutGrid, end: true, section: 'Apprendre' },
+        { to: '/etudiant/lecons', label: 'Mes leçons', short: 'Leçons', icon: MonitorPlay, badge: stats.late || undefined, section: 'Apprendre' },
+        { to: '/etudiant/calendrier', label: 'Calendrier', icon: CalendarDays, section: 'Apprendre' },
+        { to: '/etudiant/messages', label: 'Messages', icon: MessagesSquare, badge: unread || undefined, section: 'Échanger' },
       ]}
     >
       {children}

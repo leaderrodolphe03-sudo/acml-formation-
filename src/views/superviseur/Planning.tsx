@@ -1,6 +1,6 @@
 'use client'
 
-import { CalendarCog, CalendarPlus, CheckCircle2, History, Lock, PauseCircle, Sparkles, Unlock } from 'lucide-react'
+import { CalendarCog, CalendarPlus, CalendarRange, CheckCircle2, CircleCheck, CirclePause, History, Lock, SlidersHorizontal, Sparkles, Unlock } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Empty, PageHeader, Toggle } from '../../components/ui'
 import { lessonById, LEVELS, moduleById } from '../../lib/catalog'
@@ -45,7 +45,7 @@ export default function Planning() {
       `Parcours ${LEVELS.find((l) => l.id === form.levelId)?.name} programmé : ${preview.length} vidéos, ${form.perSession}/séance (${form.days.map((d) => WEEKDAYS[d]).join(', ')}) à partir du ${fmtDate(form.startDate)}`,
     )
     if (changedLevel) students.forEach((s) => updateStudent(s.user.id, { level: form.levelId }))
-    setFlash(`✅ ${preview.length} vidéos programmées jusqu'au ${fmtDate(preview.at(-1)?.date ?? form.startDate, { day: 'numeric', month: 'long' })}.`)
+    setFlash(`${preview.length} vidéos programmées jusqu'au ${fmtDate(preview.at(-1)?.date ?? form.startDate, { day: 'numeric', month: 'long' })}.`)
   }
 
   const moveLesson = (lessonId: string, date: string) => {
@@ -57,7 +57,7 @@ export default function Planning() {
     const from = startOfDay(pause.from)
     const shifted = cls.schedule.map((e) => (startOfDay(e.date) >= from ? { ...e, date: isoDay(addDays(e.date, pause.days)) } : e))
     updateClass(cls.id, { schedule: shifted }, `Pause de ${pause.days} jours à partir du ${fmtDate(pause.from)} : la suite du programme est décalée`)
-    setFlash(`⏸️ Programme décalé de ${pause.days} jours à partir du ${fmtDate(pause.from)}.`)
+    setFlash(`Programme décalé de ${pause.days} jours à partir du ${fmtDate(pause.from)}.`)
   }
 
   const setRule = (k: 'revisit' | 'requirePrevious', v: boolean) =>
@@ -65,21 +65,26 @@ export default function Planning() {
 
   return (
     <>
-      <PageHeader title="Programmation des vidéos" subtitle={`Classe « ${cls.name} » · ${cls.schedule.length} vidéos programmées`} />
-      {flash && <div className="mb-5 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 ring-1 ring-emerald-200">{flash}</div>}
+      <PageHeader eyebrow="Organisation" title="Programmation des vidéos" subtitle={`Classe « ${cls.name} » · ${cls.schedule.length} vidéos programmées`} />
+      {flash && (
+        <div role="status" className="mb-5 flex items-center gap-2.5 rounded-xl bg-emerald-50 px-4 py-3 text-[14px] font-medium text-emerald-800 ring-1 ring-emerald-600/15">
+          <CircleCheck size={17} aria-hidden="true" />
+          {flash}
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1.25fr]">
         <div className="space-y-6">
           <section className="card p-5">
-            <h2 className="flex items-center gap-2 font-bold text-brand-900"><Sparkles size={18} className="text-accent-600" /> Programmer tout le parcours en un clic</h2>
-            <p className="mt-1 text-sm text-slate-500">Choisissez le niveau et le rythme : la plateforme répartit automatiquement toutes les vidéos.</p>
+            <h2 className="flex items-center gap-2.5 text-[15px] font-medium tracking-tight text-ink"><Sparkles size={17} className="text-accent-600" aria-hidden="true" /> Programmer tout le parcours en un clic</h2>
+            <p className="mt-1 text-sm text-ink-soft">Choisissez le niveau et le rythme : la plateforme répartit automatiquement toutes les vidéos.</p>
 
             <div className="mt-5 space-y-4">
               <div>
                 <span className="label">Parcours</span>
                 <div className="grid grid-cols-3 gap-2">
                   {LEVELS.map((l) => (
-                    <button key={l.id} type="button" onClick={() => setForm({ ...form, levelId: l.id })} className={`rounded-xl border px-2 py-2.5 text-sm font-semibold transition ${form.levelId === l.id ? 'border-brand-600 bg-brand-50 text-brand-800 ring-2 ring-brand-100' : 'border-slate-200 text-slate-600 hover:border-brand-200'}`}>
+                    <button key={l.id} type="button" onClick={() => setForm({ ...form, levelId: l.id })} className={`rounded-xl border px-2 py-2.5 text-sm font-medium transition ${form.levelId === l.id ? 'border-brand-600 bg-brand-50 text-brand-800 ring-2 ring-brand-100' : 'border-line text-ink-soft hover:border-brand-200'}`}>
                       {l.name}
                     </button>
                   ))}
@@ -91,7 +96,7 @@ export default function Planning() {
                   {[1, 2, 3, 4, 5, 6, 0].map((d) => {
                     const on = form.days.includes(d)
                     return (
-                      <button key={d} type="button" aria-pressed={on} onClick={() => setForm({ ...form, days: on ? form.days.filter((x) => x !== d) : [...form.days, d] })} className={`h-10 w-12 rounded-xl text-sm font-semibold transition ${on ? 'bg-brand-700 text-white' : 'border border-slate-200 text-slate-600 hover:border-brand-200'}`}>
+                      <button key={d} type="button" aria-pressed={on} onClick={() => setForm({ ...form, days: on ? form.days.filter((x) => x !== d) : [...form.days, d] })} className={`h-10 w-12 rounded-xl text-sm font-medium transition ${on ? 'bg-brand-700 text-white' : 'border border-line text-ink-soft hover:border-brand-200'}`}>
                         {WEEKDAYS[d]}
                       </button>
                     )
@@ -120,14 +125,14 @@ export default function Planning() {
           </section>
 
           <section className="card space-y-3 p-5">
-            <h2 className="font-bold text-brand-900">Règles de diffusion</h2>
+            <h2 className="flex items-center gap-2.5 text-[15px] font-medium tracking-tight text-ink"><SlidersHorizontal size={17} className="text-ink-soft" aria-hidden="true" /> Règles de diffusion</h2>
             <Toggle checked={cls.rules.revisit} onChange={(v) => setRule('revisit', v)} label="Revoir après la date" hint="Une vidéo terminée reste disponible pour être revue." />
             <Toggle checked={cls.rules.requirePrevious} onChange={(v) => setRule('requirePrevious', v)} label="Exiger la vidéo précédente" hint="La vidéo suivante se débloque seulement quand la précédente est terminée (90 %)." />
           </section>
 
           <section className="card p-5">
-            <h2 className="flex items-center gap-2 font-bold text-brand-900"><PauseCircle size={18} className="text-amber-500" /> Suspendre (vacances, examens…)</h2>
-            <p className="mt-1 text-sm text-slate-500">Décale toutes les vidéos prévues à partir d'une date.</p>
+            <h2 className="flex items-center gap-2.5 text-[15px] font-medium tracking-tight text-ink"><CirclePause size={17} className="text-ink-soft" aria-hidden="true" /> Suspendre (vacances, examens…)</h2>
+            <p className="mt-1 text-sm text-ink-soft">Décale toutes les vidéos prévues à partir d'une date.</p>
             <div className="mt-4 grid grid-cols-[1fr_auto] gap-3">
               <div><label className="label" htmlFor="pfrom">À partir du</label><input id="pfrom" type="date" className="input" value={pause.from} onChange={(e) => setPause({ ...pause, from: e.target.value })} /></div>
               <div><label className="label" htmlFor="pdays">Durée</label>
@@ -140,25 +145,25 @@ export default function Planning() {
           </section>
 
           <section className="card p-5">
-            <h2 className="flex items-center gap-2 font-bold text-brand-900"><History size={18} /> Historique des modifications</h2>
+            <h2 className="flex items-center gap-2.5 text-[15px] font-medium tracking-tight text-ink"><History size={17} className="text-ink-soft" aria-hidden="true" /> Historique des modifications</h2>
             <ul className="mt-3 space-y-2.5 text-sm">
-              {history.length === 0 && <li className="text-slate-500">Aucune modification pour l'instant.</li>}
+              {history.length === 0 && <li className="text-ink-soft">Aucune modification pour l'instant.</li>}
               {history.map((h) => (
-                <li key={h.id} className="border-l-2 border-accent-500 pl-3"><p className="text-slate-700">{h.detail}</p><p className="text-[11px] text-slate-400">{fmtDate(h.at, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p></li>
+                <li key={h.id} className="border-l-2 border-accent-500 pl-3"><p className="text-ink">{h.detail}</p><p className="text-[11px] text-ink-soft/70">{fmtDate(h.at, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p></li>
               ))}
             </ul>
           </section>
         </div>
 
         <section className="card overflow-hidden">
-          <header className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h2 className="font-bold text-brand-900">Calendrier de diffusion</h2>
-            <span className="text-xs text-slate-500">Modifiez une date pour décaler ou avancer une vidéo</span>
+          <header className="flex items-center justify-between border-b border-line/80 px-5 py-4">
+            <h2 className="flex items-center gap-2.5 text-[15px] font-medium tracking-tight text-ink"><CalendarRange size={17} className="text-ink-soft" aria-hidden="true" /> Calendrier de diffusion</h2>
+            <span className="text-xs text-ink-soft">Modifiez une date pour décaler ou avancer une vidéo</span>
           </header>
           {cls.schedule.length === 0 ? (
             <div className="p-5"><Empty icon={CalendarCog} title="Aucune vidéo programmée">Utilisez « Programmer le parcours » pour démarrer.</Empty></div>
           ) : (
-            <ol className="divide-y divide-slate-100">
+            <ol className="divide-y divide-line/70">
               {cls.schedule.map((e, i) => {
                 const lesson = lessonById(e.lessonId)
                 const d = startOfDay(e.date)
@@ -166,12 +171,12 @@ export default function Planning() {
                 const prevModule = i > 0 ? lessonById(cls.schedule[i - 1].lessonId)?.moduleId : undefined
                 return (
                   <li key={e.lessonId}>
-                    {lesson && lesson.moduleId !== prevModule && <p className="bg-slate-50 px-5 py-2 text-xs font-bold uppercase tracking-wide text-brand-700">{moduleById(lesson.moduleId)?.title}</p>}
+                    {lesson && lesson.moduleId !== prevModule && <p className="bg-surface px-5 py-2 text-xs font-medium uppercase tracking-wide text-brand-700">{moduleById(lesson.moduleId)?.title}</p>}
                     <div className="flex items-center gap-3 px-5 py-2.5">
                       {past ? <Unlock size={16} className="shrink-0 text-emerald-600" /> : <Lock size={16} className="shrink-0 text-slate-300" />}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-slate-800"><span className="mr-1 text-slate-400">{lesson?.order}.</span>{lesson?.title}</p>
-                        <p className="text-[11px] capitalize text-slate-500">{fmtDate(e.date, { weekday: 'long', day: 'numeric', month: 'long' })}{past && ' · débloquée'}</p>
+                        <p className="truncate text-sm font-medium text-ink"><span className="mr-1 text-ink-soft/70">{lesson?.order}.</span>{lesson?.title}</p>
+                        <p className="text-[11px] capitalize text-ink-soft">{fmtDate(e.date, { weekday: 'long', day: 'numeric', month: 'long' })}{past && ' · débloquée'}</p>
                       </div>
                       <input type="date" value={e.date} onChange={(ev) => moveLesson(e.lessonId, ev.target.value)} className="input w-36 shrink-0 px-2 py-1.5 text-xs" aria-label={`Date de « ${lesson?.title} »`} />
                     </div>
@@ -180,7 +185,7 @@ export default function Planning() {
               })}
             </ol>
           )}
-          <p className="flex items-center gap-1.5 border-t border-slate-100 px-5 py-3 text-xs text-slate-500"><CheckCircle2 size={14} className="text-emerald-600" /> Les étudiants ne voient que les vidéos déjà débloquées.</p>
+          <p className="flex items-center gap-1.5 border-t border-line/80 px-5 py-3 text-xs text-ink-soft"><CheckCircle2 size={14} className="text-emerald-600" /> Les étudiants ne voient que les vidéos déjà débloquées.</p>
         </section>
       </div>
     </>

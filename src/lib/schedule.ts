@@ -88,11 +88,20 @@ export const STATUS_LABEL: Record<LessonStatus, string> = {
 }
 
 export const STATUS_STYLE: Record<LessonStatus, string> = {
-  terminee: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-  'en-cours': 'bg-sky-50 text-sky-700 ring-sky-200',
-  'non-vue': 'bg-amber-50 text-amber-700 ring-amber-200',
-  'en-retard': 'bg-red-50 text-red-700 ring-red-200',
-  verrouillee: 'bg-slate-100 text-slate-500 ring-slate-200',
+  terminee: 'bg-emerald-50 text-emerald-700 ring-emerald-600/15',
+  'en-cours': 'bg-brand-50 text-brand-700 ring-brand-700/15',
+  'non-vue': 'bg-amber-50 text-amber-800 ring-amber-600/20',
+  'en-retard': 'bg-accent-50 text-accent-700 ring-accent-600/20',
+  verrouillee: 'bg-slate-50 text-slate-500 ring-slate-400/25',
+}
+
+/** Couleur de la pastille / du trait associé à chaque statut. */
+export const STATUS_DOT: Record<LessonStatus, string> = {
+  terminee: 'bg-emerald-500',
+  'en-cours': 'bg-brand-600',
+  'non-vue': 'bg-amber-500',
+  'en-retard': 'bg-accent-600',
+  verrouillee: 'bg-slate-300',
 }
 
 export const fmtDate = (d: string | Date, opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }) =>

@@ -26,7 +26,7 @@ export default function Classes() {
 
   return (
     <>
-      <PageHeader title="Mes classes" subtitle="Créez une classe, puis partagez son code d'invitation à vos étudiants." />
+      <PageHeader eyebrow="Organisation" title="Mes classes" subtitle="Créez une classe, puis partagez son code d'invitation à vos étudiants." />
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {classes.map((c) => {
           const lvl = levelById(c.levelId)
@@ -35,13 +35,13 @@ export default function Classes() {
             <article key={c.id} className={`card flex flex-col p-5 ${c.id === cls?.id ? 'ring-2 ring-brand-500' : ''}`}>
               <div className="flex items-start justify-between gap-3">
                 <span className="grid size-11 place-items-center rounded-xl text-white" style={{ background: lvl.color }}><School size={20} /></span>
-                <span className="rounded-lg bg-slate-100 px-2 py-1 font-mono text-xs font-bold text-slate-700">{c.code}</span>
+                <span className="rounded-lg bg-slate-100 px-2 py-1 font-mono text-xs font-medium text-ink">{c.code}</span>
               </div>
-              <h2 className="mt-4 text-lg font-extrabold text-brand-900">{c.name}</h2>
-              <p className="text-sm text-slate-500">Niveau {lvl.name}</p>
-              <ul className="mt-4 space-y-1.5 text-sm text-slate-600">
-                <li className="flex items-center gap-2"><Users size={15} className="text-slate-400" />{n} étudiant(s)</li>
-                <li className="flex items-center gap-2"><CalendarDays size={15} className="text-slate-400" />
+              <h2 className="mt-4 text-[18px] font-medium tracking-tight text-ink">{c.name}</h2>
+              <p className="text-sm text-ink-soft">Niveau {lvl.name}</p>
+              <ul className="mt-4 space-y-1.5 text-sm text-ink-soft">
+                <li className="flex items-center gap-2"><Users size={15} className="text-ink-soft/70" />{n} étudiant(s)</li>
+                <li className="flex items-center gap-2"><CalendarDays size={15} className="text-ink-soft/70" />
                   {c.schedule.length ? `${c.schedule.length} vidéos · ${c.rhythm.days.map((d) => WEEKDAYS[d]).join(', ')} · dès le ${fmtDate(c.startDate)}` : 'Parcours pas encore programmé'}
                 </li>
               </ul>
@@ -64,7 +64,7 @@ export default function Classes() {
           }}
         >
           <span className="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-700"><Plus size={22} /></span>
-          <h2 className="mt-4 text-lg font-extrabold text-brand-900">Nouvelle classe</h2>
+          <h2 className="mt-4 text-[18px] font-medium tracking-tight text-ink">Nouvelle classe</h2>
           <label className="label mt-4" htmlFor="cname">Nom de la classe</label>
           <input id="cname" className="input" placeholder="Ex. Promo Janvier" value={name} onChange={(e) => setName(e.target.value)} required />
           <label className="label mt-3" htmlFor="clevel">Niveau</label>
@@ -75,8 +75,8 @@ export default function Classes() {
         </form>
       </div>
 
-      <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
-        <p className="font-semibold text-slate-800">Mode démonstration</p>
+      <div className="mt-10 rounded-2xl border border-line bg-white p-5 text-sm text-ink-soft">
+        <p className="font-medium text-ink">Mode démonstration</p>
         <p className="mt-1">Les données sont enregistrées dans ce navigateur. Vous pouvez restaurer le jeu de données d'exemple à tout moment.</p>
         {confirmReset ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">

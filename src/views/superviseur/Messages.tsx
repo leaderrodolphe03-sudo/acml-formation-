@@ -33,7 +33,7 @@ export default function Messages() {
   }
 
   const remindLate = () => {
-    late.forEach((s) => sendMessage(cls.id, s.user.id, `⏰ Rappel : tu as ${s.stats.late} vidéo(s) en retard. Connecte-toi aujourd'hui pour rattraper, on compte sur toi !`))
+    late.forEach((s) => sendMessage(cls.id, s.user.id, `Rappel : tu as ${s.stats.late} vidéo(s) en retard. Connecte-toi aujourd'hui pour rattraper, on compte sur toi !`))
     setReminded(late.length)
   }
 
@@ -46,6 +46,7 @@ export default function Messages() {
   return (
     <>
       <PageHeader
+        eyebrow="Échanger"
         title="Communication"
         subtitle="Annonces à toute la classe et messages individuels"
         actions={
@@ -55,32 +56,32 @@ export default function Messages() {
         }
       />
       <div className="card grid overflow-hidden md:grid-cols-[300px_1fr]">
-        <aside className={`border-r border-slate-100 ${mobileThread ? 'hidden md:block' : ''}`}>
-          <ul className="max-h-[600px] divide-y divide-slate-100 overflow-y-auto">
+        <aside className={`border-r border-line/80 ${mobileThread ? 'hidden md:block' : ''}`}>
+          <ul className="max-h-[600px] divide-y divide-line/70 overflow-y-auto">
             {contacts.map((c) => (
               <li key={c.id}>
-                <button onClick={() => pick(c.id)} className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${selected === c.id ? 'bg-brand-50' : 'hover:bg-slate-50'}`}>
-                  {c.isClass ? <span className="grid size-9 shrink-0 place-items-center rounded-full bg-amber-100 text-amber-700"><Megaphone size={17} /></span> : <Avatar name={c.name} />}
+                <button onClick={() => pick(c.id)} className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${selected === c.id ? 'bg-brand-50' : 'hover:bg-surface'}`}>
+                  {c.isClass ? <span className="grid size-9 shrink-0 place-items-center rounded-full bg-tint text-brand-700"><Megaphone size={17} /></span> : <Avatar name={c.name} />}
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-semibold text-slate-800">{c.name}</span>
-                      {c.last && <span className="shrink-0 text-[10px] text-slate-400">{fmtDate(c.last.at)}</span>}
+                      <span className="truncate text-sm font-medium text-ink">{c.name}</span>
+                      {c.last && <span className="shrink-0 text-[10px] text-ink-soft/70">{fmtDate(c.last.at)}</span>}
                     </span>
-                    <span className="block truncate text-xs text-slate-500">{c.last?.content ?? c.sub}</span>
+                    <span className="block truncate text-xs text-ink-soft">{c.last?.content ?? c.sub}</span>
                   </span>
-                  {c.unread > 0 && <span className="grid size-5 shrink-0 place-items-center rounded-full bg-accent-600 text-[10px] font-bold text-white">{c.unread}</span>}
+                  {c.unread > 0 && <span className="grid size-5 shrink-0 place-items-center rounded-full bg-accent-600 text-[10px] font-medium text-white">{c.unread}</span>}
                 </button>
               </li>
             ))}
           </ul>
         </aside>
         <section className={`flex flex-col ${mobileThread ? '' : 'hidden md:flex'}`}>
-          <header className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
+          <header className="flex items-center gap-3 border-b border-line/80 px-4 py-3">
             <button className="grid size-8 place-items-center rounded-lg hover:bg-slate-100 md:hidden" onClick={() => setMobileThread(false)} aria-label="Retour aux conversations"><ArrowLeft size={18} /></button>
-            {student ? <Avatar name={student.user.name} size="size-8" /> : <span className="grid size-8 place-items-center rounded-full bg-amber-100 text-amber-700"><Megaphone size={15} /></span>}
+            {student ? <Avatar name={student.user.name} size="size-8" /> : <span className="grid size-8 place-items-center rounded-full bg-tint text-brand-700"><Megaphone size={15} /></span>}
             <div>
-              <p className="text-sm font-bold text-brand-900">{student ? student.user.name : 'Annonce à toute la classe'}</p>
-              <p className="text-xs text-slate-500">{student ? `${student.stats.percent} % du parcours · ${student.stats.late} en retard` : `Visible par les ${students.length} étudiants de « ${cls.name} »`}</p>
+              <p className="text-sm font-medium tracking-tight text-ink">{student ? student.user.name : 'Annonce à toute la classe'}</p>
+              <p className="text-xs text-ink-soft">{student ? `${student.stats.percent} % du parcours · ${student.stats.late} en retard` : `Visible par les ${students.length} étudiants de « ${cls.name} »`}</p>
             </div>
           </header>
           <Thread key={selected} messages={current} placeholder={selected === 'classe' ? 'Rédiger une annonce…' : `Écrire à ${student?.user.name.split(' ')[0]}…`} onSend={(t) => sendMessage(cls.id, selected, t)} />

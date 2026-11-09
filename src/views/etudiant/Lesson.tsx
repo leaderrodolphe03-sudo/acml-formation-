@@ -1,13 +1,14 @@
 'use client'
 
 import {
-  ArrowLeft, ArrowRight, CheckCircle2, Captions, Download, FileText, Gauge, ListChecks, Lock, Pause, Play, RotateCcw, Target,
+  ArrowLeft, ArrowRight, BookText, CalendarDays, Captions, Check, CheckCircle2, Clock3, Download, FileText, Gauge, ListChecks,
+  ListOrdered, Lock, Pause, Play, RotateCcw, Target, Trophy,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { LogoImg } from '../../components/Logo'
-import { Empty, ProgressBar, StatusChip } from '../../components/ui'
+import { Empty, IconTile, Panel, ProgressBar, StatusChip } from '../../components/ui'
 import { moduleById } from '../../lib/catalog'
 import { COMPLETION_THRESHOLD, fmtDate, fmtDuration } from '../../lib/schedule'
 import { useStore } from '../../lib/store'
@@ -93,8 +94,8 @@ function Player({ lesson, progress }: { lesson: LessonT; progress?: Progress }) 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#1d63ad_0,#0a2c50_55%,#061c35_100%)]" />
         <div className={`absolute -right-10 top-10 size-48 rounded-full bg-accent-600/25 blur-2xl transition-transform duration-[4000ms] ${playing ? 'translate-y-10' : ''}`} />
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <p className="text-xs font-bold uppercase tracking-[.2em] text-accent-500">Leçon {lesson.order}</p>
-          <p className="mt-2 text-2xl font-extrabold text-white sm:text-4xl">{lesson.title}</p>
+          <p className="text-xs font-medium uppercase tracking-[.2em] text-accent-500">Leçon {lesson.order}</p>
+          <p className="mt-2 text-2xl font-medium text-white sm:text-4xl">{lesson.title}</p>
           <p className="mt-2 font-script text-xl text-brand-100 sm:text-2xl">L'anglais comme ma langue</p>
         </div>
         <span className="absolute right-3 top-3 rounded bg-white/90 px-1.5 py-1 opacity-85"><LogoImg className="h-5" /></span>
@@ -107,7 +108,7 @@ function Player({ lesson, progress }: { lesson: LessonT; progress?: Progress }) 
           )}
         </button>
         {resumeAt > 0 && !started.current && (
-          <p className="absolute left-3 top-3 rounded-md bg-white/15 px-2 py-1 text-xs font-semibold text-white backdrop-blur">Reprise à {fmtDuration(resumeAt)}</p>
+          <p className="absolute left-3 top-3 rounded-md bg-white/15 px-2 py-1 text-xs font-medium text-white backdrop-blur">Reprise à {fmtDuration(resumeAt)}</p>
         )}
       </div>
       <div className="space-y-2 px-4 pb-3 pt-2.5">
@@ -124,13 +125,13 @@ function Player({ lesson, progress }: { lesson: LessonT; progress?: Progress }) 
           <div className="ml-auto flex items-center gap-1.5">
             <label className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs hover:bg-white/10">
               <Captions size={16} />
-              <select value={subs} onChange={(e) => setSubs(e.target.value as typeof subs)} className="bg-transparent text-xs outline-none [&>option]:text-slate-900" aria-label="Sous-titres">
+              <select value={subs} onChange={(e) => setSubs(e.target.value as typeof subs)} className="bg-transparent text-xs outline-none [&>option]:text-ink" aria-label="Sous-titres">
                 <option value="off">Off</option><option value="en">EN</option><option value="fr">FR</option>
               </select>
             </label>
             <label className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs hover:bg-white/10">
               <Gauge size={16} />
-              <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="bg-transparent text-xs outline-none [&>option]:text-slate-900" aria-label="Vitesse de lecture">
+              <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="bg-transparent text-xs outline-none [&>option]:text-ink" aria-label="Vitesse de lecture">
                 {SPEEDS.map((s) => <option key={s} value={s}>{s === 10 ? '×10 (démo)' : `×${s}`}</option>)}
               </select>
             </label>
@@ -147,18 +148,23 @@ function Quiz({ lesson, progress, enabled }: { lesson: LessonT; progress?: Progr
   const [score, setScore] = useState<number | null>(null)
   if (!lesson.quiz) return null
   const quiz = lesson.quiz
+  const answered = answers.filter((a) => a !== undefined).length
 
   return (
-    <section className="card p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 font-bold text-brand-900"><ListChecks size={19} className="text-accent-600" /> Quiz de validation</h2>
-        {progress?.quizScore !== undefined && <span className="chip bg-emerald-50 text-emerald-700 ring-emerald-200">Meilleur score : {progress.quizScore} %</span>}
-      </div>
+    <Panel
+      title="Quiz de validation"
+      icon={ListChecks}
+      description={`${quiz.length} questions`}
+      action={progress?.quizScore !== undefined && <span className="chip bg-emerald-50 text-emerald-700 ring-emerald-600/15">Meilleur score : {progress.quizScore} %</span>}
+    >
       {!enabled ? (
-        <p className="mt-3 flex items-center gap-2 rounded-xl bg-slate-50 p-4 text-sm text-slate-600"><Lock size={16} /> Terminez la vidéo (au moins {COMPLETION_THRESHOLD * 100} %) pour débloquer le quiz.</p>
+        <div className="flex items-center gap-3 rounded-xl bg-surface p-4 text-[14px] text-ink-soft">
+          <IconTile icon={Lock} tone="slate" size="sm" />
+          Terminez la vidéo (au moins {COMPLETION_THRESHOLD * 100} % regardés) pour débloquer le quiz.
+        </div>
       ) : (
         <form
-          className="mt-4 space-y-5"
+          className="space-y-6"
           onSubmit={(e) => {
             e.preventDefault()
             const s = Math.round((quiz.filter((q, i) => answers[i] === q.answer).length / quiz.length) * 100)
@@ -168,17 +174,29 @@ function Quiz({ lesson, progress, enabled }: { lesson: LessonT; progress?: Progr
         >
           {quiz.map((q, i) => (
             <fieldset key={i}>
-              <legend className="text-sm font-semibold text-slate-800">{i + 1}. {q.q}</legend>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              <legend className="text-[14.5px] font-medium text-ink">
+                <span className="mr-2 text-ink-soft">{i + 1}.</span>{q.q}
+              </legend>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3">
                 {q.choices.map((c, j) => {
                   const chosen = answers[i] === j
                   const reveal = score !== null
                   const cls = reveal
-                    ? j === q.answer ? 'border-emerald-400 bg-emerald-50 text-emerald-800' : chosen ? 'border-red-300 bg-red-50 text-red-700' : 'border-slate-200 opacity-60'
-                    : chosen ? 'border-brand-500 bg-brand-50 text-brand-800 ring-2 ring-brand-100' : 'border-slate-200 hover:border-brand-200'
+                    ? j === q.answer ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : chosen ? 'border-accent-600/40 bg-accent-50 text-accent-700' : 'border-line opacity-55'
+                    : chosen ? 'border-brand-600 bg-brand-50 text-brand-900 ring-4 ring-brand-100' : 'border-line hover:border-brand-200 hover:bg-surface'
                   return (
-                    <label key={j} className={`cursor-pointer rounded-xl border px-3.5 py-2.5 text-sm transition ${cls}`}>
-                      <input type="radio" name={`q${i}`} className="sr-only" disabled={reveal} checked={chosen} onChange={() => setAnswers((a) => { const n = [...a]; n[i] = j; return n })} />
+                    <label key={j} className={`flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 text-[14px] transition has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-brand-100 ${cls}`}>
+                      <input
+                        type="radio"
+                        name={`q${i}`}
+                        className="sr-only"
+                        disabled={reveal}
+                        checked={chosen}
+                        onChange={() => setAnswers((a) => { const n = [...a]; n[i] = j; return n })}
+                      />
+                      <span className={`grid size-5 shrink-0 place-items-center rounded-full border text-[10px] font-medium ${chosen ? 'border-current bg-current' : 'border-slate-300'}`}>
+                        {chosen && <span className="size-1.5 rounded-full bg-white" />}
+                      </span>
                       {c}
                     </label>
                   )
@@ -187,16 +205,25 @@ function Quiz({ lesson, progress, enabled }: { lesson: LessonT; progress?: Progr
             </fieldset>
           ))}
           {score === null ? (
-            <button className="btn-primary" disabled={answers.filter((a) => a !== undefined).length < quiz.length}>Valider mes réponses</button>
+            <div className="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+              <button className="btn-primary" disabled={answered < quiz.length}>Valider mes réponses</button>
+              <span className="text-[12.5px] text-ink-soft">{answered}/{quiz.length} réponse{answered > 1 ? 's' : ''}</span>
+            </div>
           ) : (
-            <div className={`flex flex-wrap items-center gap-3 rounded-xl p-4 ${score >= 50 ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`}>
-              <p className="font-bold">{score >= 50 ? 'Well done!' : 'Keep trying!'} Score : {score} %</p>
-              <button type="button" className="btn-ghost ml-auto py-1.5" onClick={() => { setScore(null); setAnswers([]) }}><RotateCcw size={14} /> Recommencer</button>
+            <div className={`flex flex-wrap items-center gap-4 rounded-2xl p-4 ${score >= 50 ? 'bg-emerald-50' : 'bg-accent-50'}`}>
+              <IconTile icon={score >= 50 ? Trophy : RotateCcw} tone={score >= 50 ? 'green' : 'accent'} />
+              <div>
+                <p className={`text-[15px] font-medium ${score >= 50 ? 'text-emerald-800' : 'text-accent-700'}`}>{score >= 50 ? 'Well done!' : 'Keep trying!'} Score : {score} %</p>
+                <p className="text-[12.5px] text-ink-soft">{score >= 50 ? 'Votre résultat est transmis à votre superviseur.' : 'Revoyez la vidéo puis retentez le quiz.'}</p>
+              </div>
+              <button type="button" className="btn-ghost ml-auto" onClick={() => { setScore(null); setAnswers([]) }}>
+                <RotateCcw size={15} aria-hidden="true" /> Recommencer
+              </button>
             </div>
           )}
         </form>
       )}
-    </section>
+    </Panel>
   )
 }
 
@@ -214,87 +241,165 @@ export default function Lesson() {
     return () => clearTimeout(t)
   }, [toast])
 
-  if (!row || !cls) return <Empty icon={Lock} title="Leçon introuvable"><Link href="/etudiant/lecons" className="text-brand-700 underline">Retour à mes leçons</Link></Empty>
+  if (!row || !cls)
+    return (
+      <Empty icon={Lock} title="Leçon introuvable">
+        <Link href="/etudiant/lecons" className="font-medium text-brand-700 hover:underline">Retour à mes leçons</Link>
+      </Empty>
+    )
 
   const { lesson, status, progress } = row
   const blockedReplay = status === 'terminee' && !cls.rules.revisit
   const prev = rows[idx - 1]
   const next = rows[idx + 1]
+  const mod = moduleById(lesson.moduleId)
+  const siblings = rows.filter((r) => r.lesson.moduleId === lesson.moduleId)
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/etudiant/lecons" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-700"><ArrowLeft size={16} /> Mes leçons</Link>
+    <>
+      <Link href="/etudiant/lecons" className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink-soft transition hover:text-brand-700">
+        <ArrowLeft size={15} aria-hidden="true" /> Mes leçons
+      </Link>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <p className="eyebrow mb-2">{mod?.title} · Leçon {lesson.order}</p>
+          <h1 className="text-[26px] font-medium leading-tight tracking-[-0.03em] text-ink sm:text-[30px]">{lesson.title}</h1>
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-ink-soft">
+            <span className="inline-flex items-center gap-1.5"><Clock3 size={14} aria-hidden="true" />{Math.round(lesson.duration / 60)} min</span>
+            <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} aria-hidden="true" />Depuis le {fmtDate(row.entry.date, { day: 'numeric', month: 'long' })}</span>
+          </p>
+        </div>
         <StatusChip status={status} />
       </div>
 
-      <div>
-        <p className="text-xs font-bold uppercase tracking-wider text-accent-600">{moduleById(lesson.moduleId)?.title} · Leçon {lesson.order}</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-brand-900 sm:text-3xl">{lesson.title}</h1>
-        <p className="mt-1 text-sm text-slate-500">{Math.round(lesson.duration / 60)} min · disponible depuis le {fmtDate(row.entry.date, { day: 'numeric', month: 'long' })}</p>
-      </div>
-
-      {status === 'verrouillee' ? (
-        <div className="grid aspect-video place-items-center rounded-2xl bg-slate-200 text-center text-slate-600">
-          <div><Lock size={40} className="mx-auto" /><p className="mt-3 font-semibold">Cette vidéo sera débloquée le {fmtDate(row.entry.date, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-            {cls.rules.requirePrevious && <p className="mt-1 text-sm">Terminez d'abord la leçon précédente.</p>}</div>
-        </div>
-      ) : blockedReplay ? (
-        <div className="grid aspect-video place-items-center rounded-2xl bg-emerald-50 text-center text-emerald-800">
-          <div><CheckCircle2 size={40} className="mx-auto" /><p className="mt-3 font-semibold">Leçon terminée. Le revisionnage a été désactivé par votre superviseur.</p></div>
-        </div>
-      ) : (
-        <Player key={lesson.id} lesson={lesson} progress={progress} />
-      )}
-
-      {status !== 'verrouillee' && (
-        <div className="card flex flex-wrap items-center gap-4 p-4">
-          <div className="min-w-48 flex-1">
-            <div className="mb-1.5 flex justify-between text-xs font-semibold text-slate-600">
-              <span>Temps de visionnage réel</span>
-              <span>{row.percent} % {status === 'terminee' && '· ✅ validée'}</span>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-5">
+          {status === 'verrouillee' ? (
+            <div className="grid aspect-video place-items-center rounded-2xl border border-line bg-surface text-center">
+              <div className="px-6">
+                <span className="icon-tile mx-auto size-14 rounded-2xl bg-white text-ink-soft ring-1 ring-line"><Lock size={24} aria-hidden="true" /></span>
+                <p className="mt-4 text-[16px] font-medium text-ink">Disponible le {fmtDate(row.entry.date, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                {cls.rules.requirePrevious && <p className="mt-1 text-[13.5px] text-ink-soft">Terminez d&apos;abord la leçon précédente.</p>}
+              </div>
             </div>
-            <ProgressBar value={row.percent} color={status === 'terminee' ? 'bg-emerald-500' : 'bg-accent-500'} />
+          ) : blockedReplay ? (
+            <div className="grid aspect-video place-items-center rounded-2xl border border-emerald-200 bg-emerald-50 text-center">
+              <div className="px-6">
+                <span className="icon-tile mx-auto size-14 rounded-2xl bg-white text-emerald-600"><CheckCircle2 size={24} aria-hidden="true" /></span>
+                <p className="mt-4 text-[16px] font-medium text-emerald-900">Leçon terminée</p>
+                <p className="mt-1 text-[13.5px] text-emerald-800/80">Le revisionnage a été désactivé par votre superviseur.</p>
+              </div>
+            </div>
+          ) : (
+            <Player key={lesson.id} lesson={lesson} progress={progress} />
+          )}
+
+          {status !== 'verrouillee' && (
+            <div className="card flex flex-wrap items-center gap-x-6 gap-y-3 p-4">
+              <div className="min-w-48 flex-1">
+                <div className="mb-2 flex justify-between text-[12.5px]">
+                  <span className="font-medium text-ink">Temps de visionnage réel</span>
+                  <span className={status === 'terminee' ? 'font-medium text-emerald-700' : 'text-ink-soft'}>
+                    {row.percent} %{status === 'terminee' && ' · leçon validée'}
+                  </span>
+                </div>
+                <ProgressBar value={row.percent} color={status === 'terminee' ? 'bg-emerald-500' : 'bg-accent-600'} />
+              </div>
+              <p className="text-[12.5px] text-ink-soft">Validation à partir de {COMPLETION_THRESHOLD * 100} % regardés</p>
+            </div>
+          )}
+
+          <Panel title="Objectifs de la leçon" icon={Target}>
+            <ul className="grid gap-3 sm:grid-cols-3">
+              {lesson.objectives.map((o, i) => (
+                <li key={o} className="rounded-xl border border-line bg-surface/60 p-3.5 text-[13.5px] leading-snug text-ink">
+                  <span className="mb-2 block text-[11px] font-medium uppercase tracking-[.14em] text-accent-600">Objectif {i + 1}</span>
+                  {o}
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Quiz key={`quiz-${lesson.id}`} lesson={lesson} progress={progress} enabled={status === 'terminee'} />
+        </div>
+
+        <aside className="space-y-5">
+          <Panel title="Ressources" icon={FileText} bodyClassName="p-3">
+            <ul className="space-y-1">
+              {lesson.resources.map((r) => (
+                <li key={r.name}>
+                  <button
+                    type="button"
+                    disabled={status === 'verrouillee'}
+                    onClick={() => {
+                      log('telechargement', lesson.id, r.name)
+                      setToast(`« ${r.name} » : téléchargement simulé (démonstration)`)
+                    }}
+                    className="group flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left transition hover:bg-surface disabled:opacity-50"
+                  >
+                    <IconTile icon={r.kind === 'pdf' ? FileText : BookText} tone={r.kind === 'pdf' ? 'accent' : 'brand'} size="sm" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13.5px] font-medium text-ink">{r.name}</span>
+                      <span className="block text-[11.5px] text-ink-soft">{r.kind === 'pdf' ? 'Fiche PDF' : 'Vocabulaire'}</span>
+                    </span>
+                    <Download size={16} className="text-ink-soft transition group-hover:text-brand-700" aria-hidden="true" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Panel title="Dans ce module" icon={ListOrdered} description={mod?.title} bodyClassName="p-2">
+            <ol>
+              {siblings.map((s) => {
+                const current = s.lesson.id === lesson.id
+                const locked = s.status === 'verrouillee'
+                const inner = (
+                  <>
+                    <span
+                      className={`icon-tile size-7 rounded-full text-[11px] font-medium ${
+                        s.status === 'terminee' ? 'bg-emerald-50 text-emerald-600' : current ? 'bg-brand-700 text-white' : 'bg-slate-100 text-ink-soft'
+                      }`}
+                    >
+                      {s.status === 'terminee' ? <Check size={14} strokeWidth={2.4} aria-hidden="true" /> : locked ? <Lock size={12} aria-hidden="true" /> : s.lesson.order}
+                    </span>
+                    <span className={`min-w-0 flex-1 truncate text-[13.5px] ${current ? 'font-medium text-ink' : locked ? 'text-ink-soft' : 'text-ink'}`}>{s.lesson.title}</span>
+                  </>
+                )
+                return (
+                  <li key={s.lesson.id}>
+                    {locked || current ? (
+                      <div aria-current={current ? 'page' : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${current ? 'bg-tint' : ''}`}>{inner}</div>
+                    ) : (
+                      <Link href={`/etudiant/lecons/${s.lesson.id}`} className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-surface">{inner}</Link>
+                    )}
+                  </li>
+                )
+              })}
+            </ol>
+          </Panel>
+
+          <div className="flex gap-2">
+            {prev && (
+              <Link href={`/etudiant/lecons/${prev.lesson.id}`} className="btn-ghost flex-1">
+                <ArrowLeft size={16} aria-hidden="true" /> Précédente
+              </Link>
+            )}
+            {next && next.status !== 'verrouillee' && (
+              <Link href={`/etudiant/lecons/${next.lesson.id}`} className="btn-primary flex-1">
+                Suivante <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            )}
           </div>
-          <p className="text-xs text-slate-500">La leçon est validée à partir de {COMPLETION_THRESHOLD * 100} % regardés.</p>
+        </aside>
+      </div>
+
+      {toast && (
+        <div role="status" className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-sm items-center gap-3 rounded-2xl bg-ink px-4 py-3 text-[13.5px] text-white shadow-2xl lg:bottom-8">
+          <Download size={16} className="shrink-0 text-white/70" aria-hidden="true" />
+          {toast}
         </div>
       )}
-
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-        <section className="card p-5">
-          <h2 className="flex items-center gap-2 font-bold text-brand-900"><Target size={19} className="text-accent-600" /> Objectifs de la leçon</h2>
-          <ul className="mt-3 space-y-2 text-sm text-slate-700">
-            {lesson.objectives.map((o) => <li key={o} className="flex gap-2"><CheckCircle2 size={16} className="mt-0.5 shrink-0 text-emerald-600" />{o}</li>)}
-          </ul>
-        </section>
-        <section className="card p-5">
-          <h2 className="flex items-center gap-2 font-bold text-brand-900"><FileText size={19} className="text-accent-600" /> Ressources</h2>
-          <ul className="mt-3 space-y-2">
-            {lesson.resources.map((r) => (
-              <li key={r.name}>
-                <button
-                  disabled={status === 'verrouillee'}
-                  onClick={() => { log('telechargement', lesson.id, r.name); setToast(`« ${r.name} » : téléchargement simulé (démo)`) }}
-                  className="flex w-full items-center gap-3 rounded-xl border border-slate-200 px-3.5 py-2.5 text-left text-sm hover:border-brand-200 hover:bg-brand-50/40 disabled:opacity-50"
-                >
-                  <span className="grid size-8 place-items-center rounded-lg bg-accent-50 text-accent-600"><FileText size={16} /></span>
-                  <span className="flex-1 font-medium text-slate-700">{r.name}</span>
-                  <Download size={16} className="text-slate-400" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-
-      <Quiz key={`quiz-${lesson.id}`} lesson={lesson} progress={progress} enabled={status === 'terminee'} />
-
-      <div className="flex justify-between gap-3">
-        {prev ? <Link href={`/etudiant/lecons/${prev.lesson.id}`} className="btn-ghost"><ArrowLeft size={16} /> Précédente</Link> : <span />}
-        {next && next.status !== 'verrouillee' && <Link href={`/etudiant/lecons/${next.lesson.id}`} className="btn-primary">Leçon suivante <ArrowRight size={16} /></Link>}
-      </div>
-
-      {toast && <div className="fixed inset-x-4 bottom-24 z-50 mx-auto max-w-sm rounded-xl bg-brand-950 px-4 py-3 text-center text-sm text-white shadow-xl lg:bottom-8">{toast}</div>}
-    </div>
+    </>
   )
 }

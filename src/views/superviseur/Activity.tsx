@@ -33,10 +33,10 @@ export default function Activity() {
 
   return (
     <>
-      <PageHeader title="Journal d'activité" subtitle={`${list.length} évènement(s) · historique chronologique de la classe`} />
+      <PageHeader eyebrow="Pilotage" title="Journal d'activité" subtitle={`${list.length} évènement(s) · historique chronologique de la classe`} />
 
       <section className="card mb-6 p-4">
-        <p className="mb-3 flex items-center gap-2 text-sm font-bold text-brand-900"><Filter size={16} /> Filtrer</p>
+        <p className="mb-3 flex items-center gap-2 text-sm font-medium tracking-tight text-ink"><Filter size={16} /> Filtrer</p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <select className="input" value={f.student} onChange={(e) => setF({ ...f, student: e.target.value })} aria-label="Étudiant">
             <option value="">Tous les étudiants</option>
@@ -65,17 +65,17 @@ export default function Activity() {
         <div className="space-y-6">
           {[...groups.entries()].map(([day, items]) => (
             <section key={day}>
-              <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">{fmtDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
-              <ul className="card divide-y divide-slate-100">
+              <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-ink-soft">{fmtDate(day, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
+              <ul className="card divide-y divide-line/70">
                 {items.map((a) => {
                   const meta = ACTIVITY_META[a.type]
                   const who = db.users.find((u) => u.id === a.userId)
                   return (
                     <li key={a.id} className="flex items-center gap-3 px-4 py-3">
-                      <span className="w-12 shrink-0 font-mono text-xs text-slate-400">{new Date(a.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="w-12 shrink-0 font-mono text-xs text-ink-soft/70">{new Date(a.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
                       <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${meta.color}`}><meta.icon size={15} /></span>
                       <Avatar name={who?.name ?? '?'} size="size-7" className="hidden text-[10px] sm:grid" />
-                      <p className="min-w-0 flex-1 text-sm text-slate-700"><b className="font-semibold text-slate-900">{who?.name}</b> — {activityText(a.type, a.lessonId, a.detail)}</p>
+                      <p className="min-w-0 flex-1 text-sm text-ink"><b className="font-medium text-ink">{who?.name}</b> — {activityText(a.type, a.lessonId, a.detail)}</p>
                     </li>
                   )
                 })}

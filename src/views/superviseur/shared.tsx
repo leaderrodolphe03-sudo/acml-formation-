@@ -1,22 +1,29 @@
 'use client'
 
-import { AlertTriangle, Clock, Download, LogIn, MessageSquare, Pause, Play, PlayCircle, Settings2, Trophy, type LucideIcon } from 'lucide-react'
+import {
+  AlarmClock, CalendarCog, CircleAlert, CircleCheck, Clock3, Download, ListChecks, LogIn, MessageSquare, Pause, Play, RotateCw,
+  type LucideIcon,
+} from 'lucide-react'
+import { TONE_TILE, type Tone } from '../../components/ui'
 import { lessonById } from '../../lib/catalog'
 import { fmtDate, timeAgo } from '../../lib/schedule'
 import type { ActivityType } from '../../lib/types'
 import type { Alert } from '../../lib/insights'
 import type { StudentInfo } from './SupervisorSpace'
 
-export const ACTIVITY_META: Record<ActivityType, { label: string; icon: LucideIcon; color: string }> = {
-  connexion: { label: 'Connexion', icon: LogIn, color: 'bg-slate-100 text-slate-600' },
-  lancement: { label: 'Lancement de vidéo', icon: PlayCircle, color: 'bg-sky-50 text-sky-600' },
-  pause: { label: 'Pause', icon: Pause, color: 'bg-amber-50 text-amber-600' },
-  reprise: { label: 'Reprise', icon: Play, color: 'bg-sky-50 text-sky-600' },
-  fin: { label: 'Vidéo terminée', icon: Trophy, color: 'bg-emerald-50 text-emerald-600' },
-  telechargement: { label: 'Téléchargement', icon: Download, color: 'bg-violet-50 text-violet-600' },
-  quiz: { label: 'Quiz', icon: Trophy, color: 'bg-amber-50 text-amber-600' },
-  message: { label: 'Message', icon: MessageSquare, color: 'bg-brand-50 text-brand-600' },
-  programmation: { label: 'Programmation', icon: Settings2, color: 'bg-accent-50 text-accent-600' },
+const meta = (label: string, icon: LucideIcon, tone: Tone) => ({ label, icon, tone, color: TONE_TILE[tone] })
+
+/** Libellé, icône et teinte de chaque type d'action du journal. */
+export const ACTIVITY_META: Record<ActivityType, { label: string; icon: LucideIcon; tone: Tone; color: string }> = {
+  connexion: meta('Connexion', LogIn, 'slate'),
+  lancement: meta('Lancement de vidéo', Play, 'brand'),
+  pause: meta('Pause', Pause, 'amber'),
+  reprise: meta('Reprise', RotateCw, 'brand'),
+  fin: meta('Vidéo terminée', CircleCheck, 'green'),
+  telechargement: meta('Téléchargement', Download, 'slate'),
+  quiz: meta('Quiz', ListChecks, 'amber'),
+  message: meta('Message', MessageSquare, 'brand'),
+  programmation: meta('Programmation', CalendarCog, 'accent'),
 }
 
 export function activityText(type: ActivityType, lessonId?: string, detail?: string) {
@@ -25,14 +32,19 @@ export function activityText(type: ActivityType, lessonId?: string, detail?: str
   return parts.join(' · ')
 }
 
-export const ALERT_ICON: Record<Alert['kind'], LucideIcon> = { inactif: Clock, retard: AlertTriangle, quiz: Trophy }
+export const ALERT_ICON: Record<Alert['kind'], LucideIcon> = { inactif: Clock3, retard: AlarmClock, quiz: CircleAlert }
 
 export function AlertChips({ alerts }: { alerts: Alert[] }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {alerts.map((a) => {
         const Icon = ALERT_ICON[a.kind]
-        return <span key={a.kind} className="chip bg-red-50 text-red-700 ring-red-200"><Icon size={12} />{a.text}</span>
+        return (
+          <span key={a.kind} className="chip bg-accent-50 text-accent-700 ring-accent-600/20">
+            <Icon size={12} aria-hidden="true" />
+            {a.text}
+          </span>
+        )
       })}
     </div>
   )

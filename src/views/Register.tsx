@@ -40,7 +40,7 @@ export default function Register() {
             <input id="email" type="email" required className="input" autoComplete="email" value={form.email} onChange={set('email')} placeholder="vous@exemple.com" />
           </div>
           <div>
-            <label className="label" htmlFor="phone">Téléphone <span className="font-normal text-slate-400">(facultatif)</span></label>
+            <label className="label" htmlFor="phone">Téléphone <span className="font-normal text-ink-soft/70">(facultatif)</span></label>
             <input id="phone" type="tel" className="input" autoComplete="tel" value={form.phone} onChange={set('phone')} placeholder="+229 …" />
           </div>
         </div>
@@ -48,11 +48,11 @@ export default function Register() {
           <label className="label" htmlFor="pw">Mot de passe</label>
           <input id="pw" type="password" required className="input" autoComplete="new-password" value={form.password} onChange={set('password')} placeholder="6 caractères minimum" />
         </div>
-        {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm text-red-700">{error}</p>}
-        <button className="btn-accent w-full py-3"><UserPlus size={16} /> Créer mon compte et rejoindre la classe</button>
+        {error && <p role="alert" className="rounded-xl bg-accent-50 px-3.5 py-2.5 text-[13.5px] text-accent-700 ring-1 ring-accent-600/15">{error}</p>}
+        <button className="btn-accent h-12 w-full"><UserPlus size={16} /> Créer mon compte et rejoindre la classe</button>
       </form>
-      <p className="mt-6 text-center text-sm text-slate-600">
-        Déjà inscrit ? <Link href="/connexion" className="font-bold text-brand-700 hover:underline">Se connecter</Link>
+      <p className="mt-6 text-center text-[13.5px] text-ink-soft">
+        Déjà inscrit ? <Link href="/connexion" className="font-medium text-brand-700 hover:underline">Se connecter</Link>
       </p>
     </AuthLayout>
   )
